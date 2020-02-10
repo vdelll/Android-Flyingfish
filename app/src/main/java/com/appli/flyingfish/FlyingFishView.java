@@ -203,6 +203,7 @@ public class FlyingFishView extends View {
                 // Redirige vers l'activité game over si le joueur n'a plus de vie
                 Intent goToGameOver = new Intent(getContext(), GameOverActivity.class);
                 goToGameOver.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                goToGameOver.putExtra("score", score);
                 getContext().startActivity(goToGameOver);
             }
         }
