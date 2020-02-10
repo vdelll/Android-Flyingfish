@@ -1,6 +1,7 @@
 package com.appli.flyingfish;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -9,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 /**
  * Vue du jeu.
@@ -52,6 +54,9 @@ public class FlyingFishView extends View {
     // score
     private int score;
 
+    // nombre de vie du poisson
+    private int nbOfLife;
+
     /**
      * Constructeur de la vue du jeu.
      * 1 : Création du poisson à partir des deux images disponible en ressource.
@@ -63,6 +68,7 @@ public class FlyingFishView extends View {
      * 7 : Propriétés des boules vertes
      * 7.1 : Propriétés des boules vertes
      * 8 : Initialisation du score à 0.
+     * 9 : Initialisation du nombre de vie du poisson à 3
      *
      * @param context Le contexte dans lequel la vue du poisson sera.
      */
@@ -104,6 +110,9 @@ public class FlyingFishView extends View {
         //8 : Initialisation du score à 0
         score = 0;
 
+        //9 : Initialisation du nombre de vie du poisson à 3
+        nbOfLife = 3;
+
     }
 
     /**
@@ -116,7 +125,7 @@ public class FlyingFishView extends View {
      * 2.2 : Paramétrage des boules vertes
      * 2.3 : Paramétrage des boules rouges
      * 3 : le texte pour le score
-     * 4 : Les trois coeurs de vie placés en valeurs absolues pour le moment
+     * 4 : Les trois coeurs de vie et remplacement de l'image lorsque le joueur touche une boule rouge
      *
      * @param canvas
      */
@@ -156,7 +165,7 @@ public class FlyingFishView extends View {
         //2.1 : Paramétrage des boules jaunes
         yellowX = yellowX - yellowSpeed;
 
-        if(hitBallChecker(yellowX, yellowY)){
+        if (hitBallChecker(yellowX, yellowY)) {
             score = score + 10;
             yellowX = -100;
         }
@@ -170,7 +179,7 @@ public class FlyingFishView extends View {
         //2.2 : Paramétrage des boules vertes
         greenX = greenX - greenSpeed;
 
-        if(hitBallChecker(greenX, greenY)){
+        if (hitBallChecker(greenX, greenY)) {
             score = score + 20;
             greenX = -100;
         }
@@ -184,8 +193,18 @@ public class FlyingFishView extends View {
         //2.3 : Paramétrage des boules rouges
         redX = redX - redSpeed;
 
-        if(hitBallChecker(redX, redY)){
+        if (hitBallChecker(redX, redY)) {
             redX = -100;
+            nbOfLife--;
+
+            if (nbOfLife == 0) {
+                Toast.makeText(getContext(), "Game Over", Toast.LENGTH_SHORT).show();
+
+                // Redirige vers l'activité game over si le joueur n'a plus de vie
+                Intent goToGameOver = new Intent(getContext(), GameOverActivity.class);
+                goToGameOver.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                getContext().startActivity(goToGameOver);
+            }
         }
 
         if (redX < 0) {
@@ -197,11 +216,17 @@ public class FlyingFishView extends View {
         //3 : le texte pour le score
         canvas.drawText("Score : " + score, 20, 60, scorePaint);
 
-        //4 : Les trois coeurs de vie placés en valeurs absolues pour le moment
-        canvas.drawBitmap(life[0], 475, 10, null);
-        canvas.drawBitmap(life[0], 550, 10, null);
-        canvas.drawBitmap(life[0], 625, 10, null);
+        //4 : Les trois coeurs de vie et remplacement de l'image lorsque le joueur touche une boule rouge
+        for (int i = 0; i < 3; i++) {
+            int x = (int) (475 + life[0].getWidth() * 1.5 * i);
+            int y = 30;
 
+            if (i < nbOfLife) {
+                canvas.drawBitmap(life[0], x, y, null);
+            } else {
+                canvas.drawBitmap(life[1], x, y, null);
+            }
+        }
     }
 
     /**
