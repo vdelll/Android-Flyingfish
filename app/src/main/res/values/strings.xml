@@ -1,3 +1,6 @@
 <resources>
-    <string name="app_name">Flyingfish</string>
+    <string name="app_name">Flying Fish</string>
+    <string name="titre_splash">The Flying Fish</string>
+    <string name="rejouer">Play again</string>
+    <string name="perdu">Game Over</string>
 </resources>
